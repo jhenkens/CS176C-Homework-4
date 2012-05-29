@@ -104,6 +104,7 @@ class Client:
         """Listen for RTP packets."""
         while True:
             try:
+                print("listening")
                 data = self.rtpSocket.recv(20480)
                 if data:
                     rtpPacket = RtpPacket()
@@ -278,20 +279,13 @@ class Client:
         #-------------
         # Create a new datagram socket to receive RTP packets from the server
         self.rtpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         # Set the timeout value of the socket to 0.5sec
         self.rtpSocket.settimeout(0.5)
-        print "\n\n"
-        print self.rtpPort
-        temp = self.rtpPort+0
-        print "\n"
-        print temp
-        print "\n\n"
-        self.rtpSocket.connect(('',self.rtpPort))
-
         try:
         # Bind the socket to the address using the RTP port given by the client user
             self.state=self.READY
+            self.rtpSocket.bind(('',self.rtpPort))
+            self.rtpSocket.listen(5)
         except:
             tkMessageBox.showwarning('Unable to Bind', 'Unable to bind PORT=%d' %self.rtpPort)
 
