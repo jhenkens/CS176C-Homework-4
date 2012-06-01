@@ -1,8 +1,14 @@
-import sys
+import sys, signal
 from Tkinter import Tk
 from Client import Client
 
+def signal_handler(signal, frame):
+    print '\nGoodbye!'
+    sys.exit(0)
+
 if __name__ == "__main__":
+	# setup terminator
+	signal.signal(signal.SIGINT,signal_handler)
 	try:
 		serverAddr = sys.argv[1]
 		serverPort = sys.argv[2]

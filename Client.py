@@ -141,7 +141,7 @@ class Client:
         """Update the image file as video frame in the GUI."""
         photo = ImageTk.PhotoImage(Image.open(imageFile))
         self.label.configure(image = photo, height=288)
-        self.label.image = photo
+	self.label.image = photo
 
     def connectToServer(self):
         """Connect to the Server. Start a new RTSP/TCP session."""
@@ -278,14 +278,14 @@ class Client:
         # TO COMPLETE
         #-------------
         # Create a new datagram socket to receive RTP packets from the server
-        self.rtpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.rtpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Set the timeout value of the socket to 0.5sec
         self.rtpSocket.settimeout(0.5)
+
         try:
         # Bind the socket to the address using the RTP port given by the client user
             self.state=self.READY
             self.rtpSocket.bind(('',self.rtpPort))
-            self.rtpSocket.listen(5)
         except:
             tkMessageBox.showwarning('Unable to Bind', 'Unable to bind PORT=%d' %self.rtpPort)
 
