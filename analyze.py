@@ -228,8 +228,64 @@ if __name__=="__main__":
         print "pcap_file_list.txt has, on alternating lines, the pcap and the corresponding dependent variable value"
         sys.exit()
     f = open(sys.argv[2])
-    
+
     pcap = dpkt.pcap.Reader(f)
+    trimmed = reduceToRTPPort(pcap)
+
+
+def reduceToRTPPort(list):
+    resultList = []
+    for timestamp, buf in list:
+        try: eth = dpkt.ethernet.Ethernet(buf)
+        except: continue
+        if eth.type != 2048: continue
+        try: ip = eth.data
+        except: continue
+        if ip.p != 17: continue # if not UDP, continue
+        try: udp = ip.data
+        except: continue
+        if udp.dport != 10080: continue
+        resultList.append((timestamp,udp))
+
+
+
+    cnames = 0
+    requests = 0
+    pointers = 0
+    for timestamp, buf in pcap:
+        try: eth = dpkt.ethernet.Ethernet(buf)
+        except: continue
+        if eth.type != 2048: continue
+        # make sure we are dealing with UDP
+        # ref: http://www.iana.org/assignments/protocol-numbers/
+        try: ip = eth.data
+        except: continue
+        if ip.p != 17: continue # Per RFC5237
+        try: udp = ip.data
+        except: continue
+        if udp.sport != 53 and udp.dport != 53: continue
+        try: dns = dpkt.dns.DNS(udp.data)
+        except: continue
+        if dns.qr != dpkt.dns.DNS_R: continue
+        if dns.opcode != dpkt.dns.DNS_QUERY: continue
+        if dns.rcode != dpkt.dns.DNS_RCODE_NOERR: continue
+        if len(dns.an) < 1: continue
+        for answer in dns.an:
+            if answer.type == 5:
+                if VERBOSE:
+                    print "CNAME request" + answer.name
+                cnames += 1
+            elif answer.type == 1:
+                if VERBOSE:
+                    print "A request: " + socket.inet_ntoa(answer.rdata)
+                requests += 1
+            elif answer.type == 12:
+                if VERBOSE:
+                    print "PTR request", answer.name, "\tresponse", answer.ptrname
+                pointers += 1
+    print str(cnames) + " CNAME requests"
+    print str(requests) + " A requests"
+    print str(pointers) + " PTR requests"
 
 
 #Run our functions and close the pcap file.
