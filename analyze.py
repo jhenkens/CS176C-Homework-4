@@ -231,6 +231,7 @@ if __name__=="__main__":
 
     pcap = dpkt.pcap.Reader(f)
     trimmed = reduceToRTPPort(pcap)
+    print len(trimmed)
 
 
 def reduceToRTPPort(list):
@@ -289,6 +290,6 @@ def reduceToRTPPort(list):
 
 
 #Run our functions and close the pcap file.
-dumpDNS(pcap)
-dnsJitter(pcap)
-f.close()
+#dumpDNS(pcap)
+#dnsJitter(pcap)
+#f.close()
