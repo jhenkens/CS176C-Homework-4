@@ -221,18 +221,6 @@ def graphThis(x_data, x_label, y_data, y_label, title, outputFileName):
    g.reset()
 
 
-if __name__=="__main__":
-   # Open the pcap file passed as the command line argument
-    if len(sys.argv) !=3:
-        print "Usage:\n", sys.argv[0], "dependent_variable pcap_file_list.txt"
-        print "pcap_file_list.txt has, on alternating lines, the pcap and the corresponding dependent variable value"
-        sys.exit()
-    f = open(sys.argv[2])
-
-    pcap = dpkt.pcap.Reader(f)
-    trimmed = reduceToRTPPort(pcap)
-    print len(trimmed)
-
 
 def reduceToRTPPort(list):
     resultList = []
@@ -287,6 +275,19 @@ def reduceToRTPPort(list):
     print str(cnames) + " CNAME requests"
     print str(requests) + " A requests"
     print str(pointers) + " PTR requests"
+
+
+if __name__=="__main__":
+# Open the pcap file passed as the command line argument
+    if len(sys.argv) !=3:
+        print "Usage:\n", sys.argv[0], "dependent_variable pcap_file_list.txt"
+        print "pcap_file_list.txt has, on alternating lines, the pcap and the corresponding dependent variable value"
+        sys.exit()
+    f = open(sys.argv[2])
+
+    pcap = dpkt.pcap.Reader(f)
+    trimmed = reduceToRTPPort(pcap)
+    print len(trimmed)
 
 
 #Run our functions and close the pcap file.
